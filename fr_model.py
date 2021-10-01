@@ -1,6 +1,7 @@
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 CHANNEL_HL = 26  # BL
 phi_step = np.pi / CHANNEL_HL  # 26 body length opposite side - figS3A
@@ -112,8 +113,16 @@ class MyFly:
         self.coord_phi = - 8 * phi_step
 
         # log to save history, for plotting
-        self.phi_log = [self.coord_phi]
         self.t_log = [0]
+        self.phi_log = [self.coord_phi]
+        self.eat_log=[False]
+        self.direction_log=[self.direction]
+
+    def log(self, eating=False):
+        self.t_log.append(self.t)
+        self.phi_log.append(self.coord_phi)
+        self.eat_log.append(eating)
+        self.direction_log.append(self.direction)
 
     def make_step(self, direction):
         self.t += 1
@@ -127,8 +136,7 @@ class MyFly:
         self.integrator_y += dy
         self.current_run += np.sqrt(dx ** 2 + dy ** 2)
 
-        self.t_log.append(self.t)
-        self.phi_log.append(self.coord_phi)
+        self.log()
 
         # index of food the fly is on at the moment, None if not on an active food
         am_on_food = self.environment.update(self.coord_phi, self.t)
@@ -171,10 +179,9 @@ class MyFly:
         for t in range(self.eating_time):
             self.t += 1
             # update log at every step
-            self.t_log.append(self.t)
-            self.phi_log.append(self.coord_phi)
+            self.log(eating=True)
             # update environment
-            print('fly eating', self.t)
+            # print('fly eating', self.t)
             self.environment.update(self.coord_phi, self.t)
 
     def choose_run_length(self):
@@ -195,7 +202,7 @@ class MyFly:
             self.make_step(self.direction)
         if self.mode == 'LS':
             while self.t < Tlim:
-                print(f"{self.t} | run: {self.current_run}")
+                # print(f"{self.t} | run: {self.current_run}")
                 self.make_step(self.direction)
                 if self.current_run >= self.run_length:
                     self.reversal()
@@ -206,12 +213,30 @@ class MyFly:
         self.zero_integrator()
         self.last_state = 'reversal'
 
+    def get_df(self):
+        df = pd.DataFrame(dict(t=fly.t_log, angle=fly.phi_log,
+                                 eating=fly.eat_log, direction=fly.direction_log))
+        run_num = df.direction.diff().abs()/2
+        df["run_num"] = run_num.cumsum()
+        df.loc[0, "run_num"] = 0
+        df.run_num = df.run_num - df[df.eating].iloc[-1].run_num - 1
+        return df
+
 
 if __name__ == '__main__':
-    channel = ChannelEnvironment(enable_food_time=5, disable_food_time=300)
-    fly = MyFly(channel)
-    fly.start_walking(Tlim=600)
-    fly.plot_angle_history()
-    plt.plot(fly.environment.food_log["t"], fly.environment.food_log[0])
-    plt.show()
+    dfs = []
+    n_simulations = 300
+    for i in range(n_simulations):
+        channel = ChannelEnvironment(enable_food_time=5, disable_food_time=300*2)
+        fly = MyFly(channel)
+        fly.start_walking(Tlim=600*2)
+        # fly.plot_angle_history()
+        # plt.plot(fly.environment.food_log["t"], fly.environment.food_log[0])
+        # plt.show()
+        flydf = fly.get_df()
+        flydf["flyid"] = i
+        dfs.append(flydf)
 
+    df = pd.concat(dfs, ignore_index=True)
+    print(df.shape)
+    df.to_csv("fr_simulations.csv", index=False)
