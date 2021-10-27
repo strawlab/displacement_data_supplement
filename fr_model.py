@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 CHANNEL_HL = 26  # BL
-phi_step = np.pi / CHANNEL_HL  # 26 body length opposite side - figS3A
+#phi_step = np.pi / CHANNEL_HL  # 26 body length opposite side - figS3A
 # 1 step 0.5 s, 1 BL
 FLY_EATING_TIME = 10
 
@@ -15,18 +15,27 @@ dRL_mean = 0.03125
 dRL_std = 1.875
 
 
+def angle_minuspitopi(angle):
+    return (angle + np.pi) % (2 * np.pi) - np.pi
+
+
+def angle_close(x, y, window):
+    return np.abs(angle_minuspitopi(x - y)) <= window
+
+
 class ChannelEnvironment:
-    def __init__(self, food_coords=[0], refractory_period=16, **kwargs):
+    def __init__(self, food_coords=[0], refractory_period=16, channel_hl=CHANNEL_HL, **kwargs):
         """
         :param food_coords:
         :param enable_food_time:
         :param disable_food_time:
         :param refractory_period: time of food deactivation after the fly encountered it. Defalt: 16 steps (8 sec)
         """
+        self.channel_hl = channel_hl
         self.refractory_period = refractory_period
 
-        self.food_w = np.pi / CHANNEL_HL / 2.  # half-width of the food., 2xfood_w = BL, same as step size.
-        self.food = np.array(food_coords)
+        self.food_w = np.pi / self.channel_hl / 2.  # half-width of the food., 2xfood_w = BL, same as step size.
+        self.food = np.array(food_coords)  # list of food locations
         self.food_enabled = np.array([False] * len(food_coords))  # all food locations disabled
 
         self.schedule = defaultdict(dict)
@@ -58,9 +67,9 @@ class ChannelEnvironment:
         food_locs, food_indices = self.get_enabled_food_locations()
         for food_index, food_loc in zip(food_indices, food_locs):
             print("update:", t, food_loc, fly_coord,
-                  "fly-food:", np.abs(fly_coord - food_loc),
-                  "mod2pi:", np.abs(fly_coord - food_loc) % (2 * np.pi))
-            if np.abs(fly_coord - food_loc) % (2 * np.pi) <= self.food_w:
+                  "fly-food:", fly_coord - food_loc,
+                  "-pi to pi:", angle_minuspitopi(fly_coord - food_loc))
+            if angle_close(fly_coord, food_loc, window=self.food_w):
                 self.fly_on_food = food_index
                 return self.fly_on_food
         self.fly_on_food = None
@@ -85,7 +94,9 @@ class ChannelEnvironment:
             self.schedule[self.last_t + self.refractory_period][food_i] = True
 
     def print_current_state(self):
-        print(np.vstack([self.food, self.food_enabled]))
+        print("food:\n", np.vstack([self.food, self.food_enabled]), "\n")
+
+
 
 
 class MyFly:
@@ -96,7 +107,7 @@ class MyFly:
         else:
             self.environment = myenv
         self.t = 0
-
+        self.phi_step = np.pi / self.environment.channel_hl  # 1 body length step in radians depending on channel length
         # mind
         self.state = 'walking'  # or eating
         self.mode = 'GS'  # or LS
@@ -110,7 +121,7 @@ class MyFly:
         # env
         self.coord_x = 0
         self.coord_y = 0
-        self.coord_phi = - 8 * phi_step
+        self.coord_phi = - 8 * self.phi_step
 
         # log to save history, for plotting
         self.t_log = [0]
@@ -126,7 +137,7 @@ class MyFly:
 
     def make_step(self, direction):
         self.t += 1
-        d_angle = phi_step * direction
+        d_angle = self.phi_step * direction
         self.coord_phi += d_angle
         self.coord_x = np.cos(self.coord_phi)
         self.coord_y = np.sin(self.coord_phi)
@@ -214,13 +225,28 @@ class MyFly:
         self.last_state = 'reversal'
 
     def get_df(self):
-        df = pd.DataFrame(dict(t=fly.t_log, angle=fly.phi_log,
-                                 eating=fly.eat_log, direction=fly.direction_log))
+        df = pd.DataFrame(dict(t=self.t_log, angle=self.phi_log,
+                                 eating=self.eat_log, direction=self.direction_log))
         run_num = df.direction.diff().abs()/2
         df["run_num"] = run_num.cumsum()
         df.loc[0, "run_num"] = 0
         df.run_num = df.run_num - df[df.eating].iloc[-1].run_num - 1
         return df
+
+
+def plot_story(fly_df, food_log, ax_fly=None, ax_food=None):
+    if ax_fly is None:
+        f, ax_fly = plt.subplots()
+    if ax_food is None:
+        ax_food = ax_fly
+
+    ax_fly.plot(fly_df.t, fly_df.angle, '.-')
+    ax_fly.plot(fly_df[fly_df.eating].t, fly_df[fly_df.eating].angle, '.', color='red')
+    if "smelling" in fly_df.columns:
+        ax_fly.plot(fly_df[fly_df.smelling].t, fly_df[fly_df.smelling].angle, '.', color='cyan')
+
+    foodid = 0
+    ax_food.plot(food_log["t"], food_log[foodid])
 
 
 if __name__ == '__main__':
