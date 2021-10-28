@@ -47,6 +47,9 @@ class ChannelEnvironment:
         self.food_log = defaultdict(list)
         #{"t": [], 0: []}
 
+        self.last_food_index = None
+        self.time_off = None
+
     def set_schedule(self, enable_food_time=5, disable_food_time=100, **kwargs):
         # self.schedule[enable_food_time] = {0: True}
         # self.schedule[disable_food_time] = {0: False}
@@ -96,6 +99,10 @@ class ChannelEnvironment:
 
     def disable_food(self, food_i=0, refractory=False):
         self.set_enabled_food(food_i, False)
+        # if there is a food source which is active 1 time more than the others, don't turn it on again after time_off
+        if self.last_food_index == food_i and self.last_t > self.time_off:
+            print(f"t={self.last_t}, food {food_i} last turn off!")
+            refractory = False
         if refractory:
             for tbetween in range(self.last_t, self.last_t + self.refractory_period + 1):
                 if tbetween in self.schedule and not self.schedule[tbetween].get(food_i, True):
@@ -104,8 +111,6 @@ class ChannelEnvironment:
 
     def print_current_state(self):
         print("food:\n", np.vstack([self.food, self.food_enabled]), "\n")
-
-
 
 
 class MyFly:

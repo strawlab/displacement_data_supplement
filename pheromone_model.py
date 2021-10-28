@@ -15,7 +15,6 @@ BLRL_mean = 50
 BLRL_std = 5
 
 
-
 class ChannelWithPheromones(ChannelEnvironment):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
