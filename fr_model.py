@@ -44,11 +44,20 @@ class ChannelEnvironment:
         self.fly_on_food = None
         self.last_t = 0
 
-        self.food_log = {"t": [], 0: []}
+        self.food_log = defaultdict(list)
+        #{"t": [], 0: []}
 
     def set_schedule(self, enable_food_time=5, disable_food_time=100, **kwargs):
-        self.schedule[enable_food_time] = {0: True}
-        self.schedule[disable_food_time] = {0: False}
+        # self.schedule[enable_food_time] = {0: True}
+        # self.schedule[disable_food_time] = {0: False}
+        food_on_dict = {}
+        food_off_dict = {}
+        for foodi in range(len(self.food)):
+            food_on_dict[foodi] = True
+            food_off_dict[foodi] = False
+
+        self.schedule[enable_food_time] = food_on_dict
+        self.schedule[disable_food_time] = food_off_dict
 
     def env_state_update(self, t):  # when the food is active
         self.last_t = t
@@ -58,8 +67,8 @@ class ChannelEnvironment:
                 self.set_enabled_food(foodid, state)
             del self.schedule[t]
 
+        self.food_log["t"].append(self.last_t)
         for ifood in range(len(self.food)):
-            self.food_log["t"].append(self.last_t)
             self.food_log[ifood].append(self.food_enabled[ifood])
 
     def update(self, fly_coord, t):
@@ -245,8 +254,14 @@ def plot_story(fly_df, food_log, ax_fly=None, ax_food=None):
     if "smelling" in fly_df.columns:
         ax_fly.plot(fly_df[fly_df.smelling].t, fly_df[fly_df.smelling].angle, '.', color='cyan')
 
-    foodid = 0
-    ax_food.plot(food_log["t"], food_log[foodid])
+    t = np.array(food_log["t"])
+    for foodid in food_log.keys():
+        if foodid != "t":
+            curfood = np.array(food_log[foodid])
+            ax_food.plot(t, curfood + foodid, label=str(foodid))
+    ax_food.legend()
+    # foodid = 0
+    # ax_food.plot(food_log["t"], food_log[foodid])
 
 
 if __name__ == '__main__':
