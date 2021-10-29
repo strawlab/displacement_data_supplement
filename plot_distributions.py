@@ -106,6 +106,7 @@ if __name__ == '__main__':
     sns.histplot(data=post_runs[post_runs.flyid.isin(good_flies)], x='theta_midpoint', hue='last_food_index',
                  element='step', fill=False, stat='density', common_norm=False, bins=20, ax=axs[1])
     axs[1].set_title("Selected trials")
+    plt.tight_layout()
     pdf.savefig(fig3)
     pdf.close()
     time.sleep(1)

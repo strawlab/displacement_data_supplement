@@ -15,9 +15,9 @@ class PhModelConfig:
     RL_std: float = 2.625
     BLRL_mean: float = 50
     BLRL_std: float = 5
-    Ph_k = 2
-    Ph_std_k = 2
-    Ph_lifetime = 200
+    Ph_k: float = 2
+    Ph_std_k: float = 2
+    Ph_lifetime: float = 200
 
 
 class ChannelWithPheromones(ChannelEnvironment):

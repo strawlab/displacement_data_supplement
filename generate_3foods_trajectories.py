@@ -38,6 +38,7 @@ if __name__ == '__main__':
         for i in range(n_simulations):
             channel = ChannelWithPheromones(enable_food_time=5, disable_food_time=None,
                                             food_coords=[0, 5 * np.pi / 26, -5 * np.pi / 26])
+            channel.set_config(config)
             # channel = ChannelWithPheromones(enable_food_time=5, disable_food_time=300*2)
             channel.schedule[5] = {0: True, 1: True, 2: True}
 
