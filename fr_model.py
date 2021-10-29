@@ -55,12 +55,13 @@ class ChannelEnvironment:
         # self.schedule[disable_food_time] = {0: False}
         food_on_dict = {}
         food_off_dict = {}
-        for foodi in range(len(self.food)):
-            food_on_dict[foodi] = True
-            food_off_dict[foodi] = False
+        if disable_food_time is not None:
+            for foodi in range(len(self.food)):
+                food_on_dict[foodi] = True
+                food_off_dict[foodi] = False
 
-        self.schedule[enable_food_time] = food_on_dict
-        self.schedule[disable_food_time] = food_off_dict
+            self.schedule[enable_food_time] = food_on_dict
+            self.schedule[disable_food_time] = food_off_dict
 
     def env_state_update(self, t):  # when the food is active
         self.last_t = t
@@ -78,9 +79,9 @@ class ChannelEnvironment:
         self.env_state_update(t)
         food_locs, food_indices = self.get_enabled_food_locations()
         for food_index, food_loc in zip(food_indices, food_locs):
-            print("update:", t, food_loc, fly_coord,
-                  "fly-food:", fly_coord - food_loc,
-                  "-pi to pi:", angle_minuspitopi(fly_coord - food_loc))
+            # print("update:", t, food_loc, fly_coord,
+            #       "fly-food:", fly_coord - food_loc,
+            #       "-pi to pi:", angle_minuspitopi(fly_coord - food_loc))
             if angle_close(fly_coord, food_loc, window=self.food_w):
                 self.fly_on_food = food_index
                 return self.fly_on_food
@@ -92,21 +93,25 @@ class ChannelEnvironment:
 
     def set_enabled_food(self, food_i, enabled_value):
         self.food_enabled[food_i] = enabled_value
-        print(f"t={self.last_t}: Food #{food_i} [{self.food[food_i]}] := {enabled_value}")
+        # print(f"t={self.last_t}: Food #{food_i} [{self.food[food_i]}] := {enabled_value}")
 
     def enable_food(self, food_i=0):
         self.set_enabled_food(food_i, True)
 
     def disable_food(self, food_i=0, refractory=False):
         self.set_enabled_food(food_i, False)
+
         # if there is a food source which is active 1 time more than the others, don't turn it on again after time_off
         if self.last_food_index == food_i and self.last_t > self.time_off:
             print(f"t={self.last_t}, food {food_i} last turn off!")
             refractory = False
+
         if refractory:
+            # don't turn the food on if the schedule says it should be turned off during refractory period.
             for tbetween in range(self.last_t, self.last_t + self.refractory_period + 1):
                 if tbetween in self.schedule and not self.schedule[tbetween].get(food_i, True):
                     return
+            # otherwise schedule food on after refractory period
             self.schedule[self.last_t + self.refractory_period][food_i] = True
 
     def print_current_state(self):
@@ -184,7 +189,7 @@ class MyFly:
         ax.axis('equal')
 
     def on_food(self, food_index):
-        print(self.t, " - fly on food!")
+        # print(self.t, " - fly on food!")
         self.mode = 'LS'  # enter the local search mode
 
         # remember the eating state

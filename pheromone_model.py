@@ -1,18 +1,23 @@
+import os
+from dataclasses import dataclass
+
 import numpy as np
 import matplotlib.pyplot as plt
+import yaml
 
 from fr_model import ChannelEnvironment, FLY_EATING_TIME, angle_close, angle_minuspitopi
 import pandas as pd
 
-# after food
-RL_mean = 4.125
-RL_std = 2.625
 
-# baseline
-#BLRL_mean = 10 * RL_mean
-#BLRL_std = 2 * RL_std
-BLRL_mean = 50
-BLRL_std = 5
+@dataclass
+class PhModelConfig:
+    RL_mean: float = 4.125
+    RL_std: float = 2.625
+    BLRL_mean: float = 50
+    BLRL_std: float = 5
+    Ph_k = 2
+    Ph_std_k = 2
+    Ph_lifetime = 200
 
 
 class ChannelWithPheromones(ChannelEnvironment):
@@ -20,7 +25,11 @@ class ChannelWithPheromones(ChannelEnvironment):
         super().__init__(**kwargs)
         self.pheromone_w = self.food_w
         self.pheromone_dict = {}
-        self.odor=0
+        self.odor = 0
+        self.config = PhModelConfig()
+
+    def set_config(self, config_dict):
+        self.config = PhModelConfig(**config_dict)
 
     def add_pheromone(self, coord, lifetime, strength_init=1):
         self.pheromone_dict[coord] = {'lifetime': lifetime,
@@ -39,10 +48,9 @@ class ChannelWithPheromones(ChannelEnvironment):
     def is_fly_on_food(self, fly_coord):
         food_locs, food_indices = self.get_enabled_food_locations()
         for food_index, food_loc in zip(food_indices, food_locs):
-            print("update:", self.last_t, food_loc, fly_coord,
-                  "fly-food:", np.abs(fly_coord - food_loc),
-                  "-pitopi:", angle_minuspitopi(fly_coord - food_loc))
-                  #"mod2pi:", np.abs(fly_coord - food_loc) % (2 * np.pi))
+            # print("update:", self.last_t, food_loc, fly_coord,
+            #       "fly-food:", np.abs(fly_coord - food_loc),
+            #       "-pitopi:", angle_minuspitopi(fly_coord - food_loc))
             if angle_close(fly_coord, food_loc, window=self.food_w):
                 ret = food_index
                 return ret
@@ -62,7 +70,7 @@ class ChannelWithPheromones(ChannelEnvironment):
         self.env_state_update(t)
         self.fly_on_food = self.is_fly_on_food(fly_coord)
         self.odor = self.smell_pheromones(fly_coord)
-        print(t, "fly on food:", self.fly_on_food, ", odor:", self.odor)
+        # print(t, "fly on food:", self.fly_on_food, ", odor:", self.odor)
 
 
 class MyFlyPheromones:
@@ -72,6 +80,9 @@ class MyFlyPheromones:
             self.environment = ChannelWithPheromones()
         else:
             self.environment = myenv
+
+        self.config = self.environment.config
+
         self.phi_step = np.pi / self.environment.channel_hl  # 1 body length step in radians depending on channel length
 
         self.t = 0
@@ -143,7 +154,7 @@ class MyFlyPheromones:
         ax.axis('equal')
 
     def on_food(self, food_index):
-        print(self.t, " - fly on food!")
+        # print(self.t, " - fly on food!")
         self.mode = 'LS'  # enter the local search mode
 
         # remember the eating state
@@ -171,18 +182,18 @@ class MyFlyPheromones:
         # if just was on food
         if self.last_state == 'eating':
             #self.run_length = np.random.normal(RL_mean, RL_std) + self.current_run
-            self.run_length = np.random.normal(RL_mean, RL_std)  # not based on current run length, choose new.
+            self.run_length = np.random.normal(self.config.RL_mean, self.config.RL_std)  # not based on current run length, choose new.
 
         elif self.last_state == 'reversal':
             #self.run_length = np.abs(self.current_run + np.random.normal(dRL_mean, dRL_std))
-            self.run_length = np.random.normal(BLRL_mean, BLRL_std)  # choose big run length
+            self.run_length = np.random.normal(self.config.BLRL_mean, self.config.BLRL_std)  # choose big run length
         elif self.last_state == 'smelling':
             # change mean run length based on odor value: if odor=1, same as food, closer to 0 - 3 times longer walk.
-            rl_mean = RL_mean * (1 + 2*(1-odor))
-            rl_std = RL_std*(2-odor)
+            rl_mean = self.config.RL_mean * (1 + self.config.Ph_k*(1-odor))
+            rl_std = self.config.RL_std*(self.config.Ph_std_k-odor)
             self.run_length = np.random.normal(rl_mean, rl_std)
 
-        print(f"Prev: {self.last_state}, last run was: {self.current_run}, RL:{self.run_length}")
+        # print(f"Prev: {self.last_state}, last run was: {self.current_run}, RL:{self.run_length}")
         self.current_run = 0  # start walking from here, forget the past.
 
     def start_walking(self, Tlim=500):
@@ -197,7 +208,7 @@ class MyFlyPheromones:
 
     def reversal(self):
         self.direction *= -1
-        self.last_state = 'reversal' # moved from the end to before choosing new run len
+        self.last_state = 'reversal'  # moved from the end to before choosing new run len
         self.choose_run_length()
 #        self.zero_integrator() moved it to choose_run_length
 
@@ -209,13 +220,14 @@ class MyFlyPheromones:
         df["run_num"] = run_num.cumsum()
         df.loc[0, "run_num"] = 0
         df.run_num = df.run_num - df[df.eating].iloc[-1].run_num - 1
+
         return df
 
     def feel_pheromones(self, odor):
-        print("I feel some smell! Value:", odor)
+        # print("I feel some smell! Value:", odor)
         self.last_state = 'smelling'
         self.choose_run_length(odor=odor)
 
     def release_pheromone(self):
-        print('releasing pheromone...')
-        self.environment.add_pheromone(self.coord_phi, lifetime=200)
+        # print('releasing pheromone...')
+        self.environment.add_pheromone(self.coord_phi, lifetime=self.config.Ph_lifetime)
