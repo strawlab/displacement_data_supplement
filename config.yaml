@@ -30,30 +30,39 @@
 # # initial:
 
 iterations: 1000
+data_folder: rewards3
 
-pheromone_simulations_4.csv:
-  RL_mean: 5
-  RL_std: 2
-  Ph_k: 1.5
-  Ph_std_k: 1.5
-  Ph_lifetime: 200
-  BLRL_mean: 50
-  BLRL_std: 5
+channel:
+  half_length: 26
+  refractory_time: 16
 
-pheromone_simulations_1.csv:
-  RL_mean: 4.125
-  RL_std: 2.625
-  Ph_k: 2
-  Ph_std_k: 2
-  Ph_lifetime: 200
-  BLRL_mean: 50
-  BLRL_std: 5
+fly:
+  eating_time: 10
 
-pheromone_simulations_5.csv:
-  RL_mean: 4.125
-  RL_std: 2.625
-  Ph_k: 2
-  Ph_std_k: 2
-  Ph_lifetime: 400
-  BLRL_mean: 50
-  BLRL_std: 5
+model_settings:
+  pheromone_simulations_4.csv:
+    RL_mean: 5
+    RL_std: 2
+    Ph_k: 1.5
+    Ph_std_k: 1.5
+    Ph_lifetime: 200
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  pheromone_simulations_1.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 2
+    Ph_std_k: 2
+    Ph_lifetime: 200
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  pheromone_simulations_5.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 2
+    Ph_std_k: 2
+    Ph_lifetime: 400
+    BLRL_mean: 50
+    BLRL_std: 5

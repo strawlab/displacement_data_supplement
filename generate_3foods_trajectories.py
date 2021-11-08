@@ -4,25 +4,8 @@ import numpy as np
 import pandas as pd
 import sys
 
-import yaml
-
 from pheromone_model import ChannelWithPheromones, MyFlyPheromones
-
-
-def read_config_yaml(config_filename="config.yaml", section=None):
-    if not os.path.isfile(config_filename):
-        raise FileNotFoundError(config_filename)
-    with open(config_filename, 'r') as ymlfile:
-        config = yaml.load(ymlfile, Loader=yaml.FullLoader)
-        if section is None:
-            return config
-        return config[section]
-
-
-def write_config_yaml(data, config_filename):
-    with open(config_filename, 'w') as ymlfile:
-        yaml.dump(data, ymlfile, default_flow_style=False)
-
+from shared_funcs import read_config_yaml, write_config_yaml
 
 if __name__ == '__main__':
     data_filename = sys.argv[1]

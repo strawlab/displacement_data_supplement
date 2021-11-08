@@ -1,0 +1,30 @@
+
+#iterations: 1000
+iterations: 1
+data_folder: circling_test
+
+channel:
+  half_length: 13
+  refractory_period: 16
+
+fly:
+  eating_time: 10
+
+model_settings:
+  circling_simulations.csv:
+    RL_mean: 5
+    RL_std: 2
+    Ph_k: 2
+    Ph_std_k: 4
+    Ph_lifetime: 400
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  circling_simulations2.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 3
+    Ph_std_k: 2
+    Ph_lifetime: 400
+    BLRL_mean: 50
+    BLRL_std: 5

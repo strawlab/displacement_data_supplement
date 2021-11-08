@@ -5,7 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import yaml
 
-from fr_model import ChannelEnvironment, FLY_EATING_TIME, angle_close, angle_minuspitopi
+from fr_model import FLY_EATING_TIME
+from shared_funcs import angle_minuspitopi, angle_close
+from channels import ChannelEnvironment
 import pandas as pd
 
 
@@ -26,12 +28,14 @@ class ChannelWithPheromones(ChannelEnvironment):
         self.pheromone_w = self.food_w
         self.pheromone_dict = {}
         self.odor = 0
-        self.config = PhModelConfig()
+        # self.config = PhModelConfig()
 
-    def set_config(self, config_dict):
-        self.config = PhModelConfig(**config_dict)
+    # def set_config(self, config_dict):
+    #     self.config = PhModelConfig(**config_dict)
 
-    def add_pheromone(self, coord, lifetime, strength_init=1):
+    def add_pheromone(self, coord, lifetime=None, strength_init=1):
+        # if lifetime is None:
+        #     lifetime = self.config.Ph_lifetime
         self.pheromone_dict[coord] = {'lifetime': lifetime,
                                       'strength_init': strength_init,
                                       'strength': strength_init,
@@ -74,14 +78,15 @@ class ChannelWithPheromones(ChannelEnvironment):
 
 
 class MyFlyPheromones:
-    def __init__(self, myenv: ChannelWithPheromones = None):
+    def __init__(self, myenv: ChannelWithPheromones = None, model_config: dict = None):
         self.eating_time = FLY_EATING_TIME
         if myenv is None:
             self.environment = ChannelWithPheromones()
         else:
             self.environment = myenv
 
-        self.config = self.environment.config
+        assert model_config is not None
+        self.config = PhModelConfig(**model_config)
 
         self.phi_step = np.pi / self.environment.channel_hl  # 1 body length step in radians depending on channel length
 
@@ -190,7 +195,8 @@ class MyFlyPheromones:
         elif self.last_state == 'smelling':
             # change mean run length based on odor value: if odor=1, same as food, closer to 0 - 3 times longer walk.
             rl_mean = self.config.RL_mean * (1 + self.config.Ph_k*(1-odor))
-            rl_std = self.config.RL_std*(self.config.Ph_std_k-odor)
+            # rl_std = self.config.RL_std*(self.config.Ph_std_k-odor)
+            rl_std = self.config.RL_std * (1 + self.config.Ph_std_k * (1 - odor))
             self.run_length = np.random.normal(rl_mean, rl_std)
 
         # print(f"Prev: {self.last_state}, last run was: {self.current_run}, RL:{self.run_length}")
