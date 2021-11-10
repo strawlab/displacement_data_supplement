@@ -1,7 +1,8 @@
 
-#iterations: 1000
-iterations: 1
-data_folder: circling_test
+iterations: 1000
+data_folder: circling
+#iterations: 10
+#data_folder: circling_test
 
 channel:
   half_length: 13
@@ -28,3 +29,30 @@ model_settings:
     Ph_lifetime: 400
     BLRL_mean: 50
     BLRL_std: 5
+
+  circling_simulations3.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 2
+    Ph_std_k: 6
+    Ph_lifetime: 400
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  circling_simulations4.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 3
+    Ph_std_k: 3
+    Ph_lifetime: 500
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  circling_simulations5.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 3
+    Ph_std_k: 3
+    Ph_lifetime: 500
+    BLRL_mean: 80
+    BLRL_std: 20

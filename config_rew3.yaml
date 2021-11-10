@@ -1,0 +1,77 @@
+# # after food, initial parameters
+# RL_mean = 4.125
+# RL_std = 2.625
+# PHEROMONES_K = 2
+# PHEROMONES_STD_K = 2
+
+# # pheromone_simulations_2.csv
+# RL_mean = 3.5
+# RL_std = 1.7
+# PHEROMONES_K = 2
+# PHEROMONES_STD_K = 2
+
+# # pheromone_simulations_3.csv
+# RL_mean = 4
+# RL_std = 2
+# PHEROMONES_K = 2
+# PHEROMONES_STD_K = 2
+
+# # pheromone_simulations_4.csv
+# RL_mean = 5
+# RL_std = 2
+# PHEROMONES_K = 1.5
+# PHEROMONES_STD_K = 1.5
+# PHEROMONE_DECAY_TIME = 200
+
+# baseline
+# # tried before
+# BLRL_mean = 10 * RL_mean
+# BLRL_std = 2 * RL_std
+# # initial:
+
+iterations: 1000
+data_folder: rewards3
+
+channel:
+  half_length: 26
+  refractory_period: 16
+
+fly:
+  eating_time: 10
+
+model_settings:
+  pheromone_simulations_4.csv:
+    RL_mean: 5
+    RL_std: 2
+    Ph_k: 1.5
+    Ph_std_k: 1.5
+    Ph_lifetime: 200
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  pheromone_simulations_1.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 2
+    Ph_std_k: 2
+    Ph_lifetime: 200
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  pheromone_simulations_5.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 2
+    Ph_std_k: 2
+    Ph_lifetime: 400
+    BLRL_mean: 50
+    BLRL_std: 5
+
+  three_rewards_5.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 3
+    Ph_std_k: 3
+    Ph_lifetime: 500
+    BLRL_mean: 80
+    BLRL_std: 20

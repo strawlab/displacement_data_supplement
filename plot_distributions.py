@@ -99,14 +99,16 @@ if __name__ == '__main__':
     pdf.savefig(fig2)
 
     fig3, axs = plt.subplots(2, 1, figsize=(4,6))
+    # bins was 20 before
     sns.histplot(data=post_runs, x='theta_midpoint', hue='last_food_index', element='step',
-                 fill=False, bins=20, ax=axs[0])
+                 fill=False, bins=21, ax=axs[0])
     axs[0].set_title("Run length midpoints Post, all trials")
 
     sns.histplot(data=post_runs[post_runs.flyid.isin(good_flies)], x='theta_midpoint', hue='last_food_index',
-                 element='step', fill=False, stat='density', common_norm=False, bins=20, ax=axs[1])
+                 element='step', fill=False, stat='density', common_norm=False, bins=21, ax=axs[1])
     axs[1].set_title("Selected trials")
     plt.tight_layout()
     pdf.savefig(fig3)
     pdf.close()
-    time.sleep(1)
+    time.sleep(2)
+    print("bye:)")

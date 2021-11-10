@@ -193,7 +193,7 @@ class MyFlyPheromones:
             #self.run_length = np.abs(self.current_run + np.random.normal(dRL_mean, dRL_std))
             self.run_length = np.random.normal(self.config.BLRL_mean, self.config.BLRL_std)  # choose big run length
         elif self.last_state == 'smelling':
-            # change mean run length based on odor value: if odor=1, same as food, closer to 0 - 3 times longer walk.
+            # change mean run length based on odor value: if odor=1, same as food, closer to 0 - x times longer walk.
             rl_mean = self.config.RL_mean * (1 + self.config.Ph_k*(1-odor))
             # rl_std = self.config.RL_std*(self.config.Ph_std_k-odor)
             rl_std = self.config.RL_std * (1 + self.config.Ph_std_k * (1 - odor))
