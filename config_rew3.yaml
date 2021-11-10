@@ -67,6 +67,7 @@ model_settings:
     BLRL_mean: 50
     BLRL_std: 5
 
+  # same as in circling 5th
   three_rewards_5.csv:
     RL_mean: 4.125
     RL_std: 2.625
