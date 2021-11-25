@@ -54,6 +54,7 @@ if __name__ == '__main__':
     df["relative_angle"] = df.groupby(['flyid', 'iteration']).angle.apply(lambda alpha: alpha - alpha.iloc[0])
     # redundant? tt is the same?
     df["t_post"] = df.groupby(['flyid', 'iteration']).t.apply(lambda t: t - t.iloc[0])
+
     ######################################################################
     # get the runs
     df = df.groupby(['flyid', 'iteration']).apply(mark_return)
@@ -68,6 +69,8 @@ if __name__ == '__main__':
         df.to_csv(data_filename[:-4] + "_postAP_preprocessed.csv", index=False)
         pd_runs.to_csv(data_filename[:-4] + "_post_return_runs.csv", index=False)
 
+    pd_runs.to_csv('post_return_runs.csv', index=False)
+
     ######################################################################
     if not to_plot:
         exit(0)
@@ -81,6 +84,7 @@ if __name__ == '__main__':
     fig1, ax = plt.subplots(figsize=(8, 4))
     one_example = df[df.flyid == example_flyid].copy()
     one_example = one_example.groupby('iteration').apply(mark_return)
+    one_example.to_csv('circling_example.csv', index=False)
 
     pos_scale = 2 * np.pi  # position in full revolutions
     t_scale = 2.  # time in seconds
