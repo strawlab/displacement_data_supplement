@@ -10,7 +10,7 @@ import seaborn as sns
 
 # def angle_minuspitopi(angle):
 #     return (angle + np.pi) % (2 * np.pi) - np.pi
-from shared_funcs import angle_in_range
+from shared_funcs import angle_in_range, angle_minuspitopi
 
 if __name__ == '__main__':
     data_filename = sys.argv[1]
@@ -24,7 +24,6 @@ if __name__ == '__main__':
                              "last_food_index_first": "last_food_index",
                              "direction_first": "direction"}, inplace=True)
     run_info['theta_midpoint'] = run_info.run_midpoint.apply(lambda angle: angle_minuspitopi(angle))
-    run_info.to_csv(data_filename[:-4]+"_runs.csv", index=False)
     pdf_fname = data_filename[:-4]+".pdf"
     post_runs = run_info[run_info['run_num'] >= 0]
 
@@ -40,17 +39,25 @@ if __name__ == '__main__':
         col = f"contains_{ifood}"
         run_info[col] = run_info.apply(lambda row: angle_in_range(food_coord, row.angle_first, row.angle_last), axis=1)
     run_info["contains_food"] = run_info.contains_0.astype(int) + run_info.contains_1.astype(int) + run_info.contains_2.astype(int)
+
+    run_info.to_csv(data_filename[:-4] + "_runs.csv", index=False)
+
     ap_runs = run_info[run_info.run_num < 0]
     good_ones2 = ap_runs[(ap_runs.run_num == -2) & (ap_runs.contains_food == 3)]
     good_ones3 = ap_runs[(ap_runs.run_num == -3) & (ap_runs.contains_food == 3)]
-
     good_flies2 = set(good_ones2.flyid.unique())
     good_flies3 = set(good_ones3.flyid.unique())
     good_flies = good_flies2.intersection(good_flies3)
+
     print(f"n good flies: {len(good_flies)}")
     good_ones = ap_runs[ap_runs.flyid.isin(good_flies)]
+
     print("numbers of good simulations: ", good_ones.last_food_index.value_counts())
     example_flyids = good_ones.groupby("last_food_index").flyid.first()
+
+    df_examples = df[df.flyid.isin(example_flyids)]
+    df_examples.to_csv(data_filename[:-4] + "_examples.csv")
+
     fig2, axs = plt.subplots(3, 1, figsize=(7, 8))
     for i, fly in enumerate(example_flyids):
         data = df[df.flyid == fly]
@@ -65,6 +72,9 @@ if __name__ == '__main__':
         axs[i].set_title(str(fly))
     plt.tight_layout()
     pdf.savefig(fig2)
+
+    post_runs_good = post_runs[post_runs.flyid.isin(good_flies)]
+    post_runs_good.to_csv(data_filename[:-4] + "_postAP_runs_selected.csv", index=False)
 
     fig3, axs = plt.subplots(2, 1, figsize=(4,6))
     # bins was 20 before

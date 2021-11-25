@@ -22,6 +22,8 @@ def mark_return(idata):
 
 
 if __name__ == '__main__':
+    to_plot = True
+    to_save = True
     # parameters
     AP_len = 5 * 60 * 2  # (5 minutes, 2 steps per sec)
     postAP_len = 5 * 60 * 2
@@ -62,8 +64,14 @@ if __name__ == '__main__':
                             "direction_first": "direction"}, inplace=True)
     pd_runs['run_midpoint'] = (pd_runs.relative_angle_last + pd_runs.relative_angle_first) / 2
     pd_runs['theta_midpoint'] = pd_runs.run_midpoint.apply(lambda angle: angle_minuspitopi(angle))
+    if to_save:
+        df.to_csv(data_filename[:-4] + "_postAP_preprocessed.csv", index=False)
+        pd_runs.to_csv(data_filename[:-4] + "_post_return_runs.csv", index=False)
 
     ######################################################################
+    if not to_plot:
+        exit(0)
+
     # create pdf
     pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_fname)
 
