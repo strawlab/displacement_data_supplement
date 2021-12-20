@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 
+# https://matplotlib.org/stable/tutorials/text/mathtext.html did not work
 mpl.rc('font', size=6)
 plt.rcParams['svg.fonttype'] = 'none'
 

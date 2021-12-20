@@ -5,8 +5,14 @@ import matplotlib as mpl
 import numpy as np
 import seaborn as sns
 
-mpl.rc('font', size=6)
+mpl.rc('font', size=7)
+
+# mpl.rcParams['font.family'] = ['sans-serif']
+# mpl.rcParams['font.sans-serif'] = ['Arial']
+# mpl.rcParams['text.usetex'] = False
+# mpl.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['svg.fonttype'] = 'none'
+mpl.rcParams['mathtext.fontset'] = 'cm'
 
 if __name__ == '__main__':
     nbins = 25
@@ -40,6 +46,11 @@ if __name__ == '__main__':
     sns.histplot(data=post_runs_good, x='theta_midpoint', hue='last_food_index',
                  element='step', fill=False, stat='density', common_norm=False, bins=nbins, ax=ax)
     ax.set_title("Distribution of run midpoints")
+    ax.set_xticks([-np.pi, 0, np.pi])
+    # ax.set_xticklabels([r'- $\pi$', '0', r'$\pi$'])
+
+    # ax.set_xticklabels(['-1', '0', '1'])
+    ax.set_xticklabels(['-π', '0', 'π'])
     plt.tight_layout()
     plt.savefig(data_filename[:-4]+"_run_mids.svg")
     print("bye:)")

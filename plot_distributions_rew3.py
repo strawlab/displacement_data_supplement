@@ -12,27 +12,58 @@ import seaborn as sns
 #     return (angle + np.pi) % (2 * np.pi) - np.pi
 from shared_funcs import angle_in_range, angle_minuspitopi
 
+
+# def mark_departure(idata):
+#     idata['departure_status'] = 'post_departure'
+#     if idata[idata.relative_angle.abs() >= np.pi].empty:
+#         return idata
+#     departure_time = idata[idata.relative_angle.abs() >= np.pi].iloc[0].t
+#
+#     idata.loc[idata.t < departure_time, "departure_status"] = 'pre_departure'
+#     return idata
+
+def mark_stages(data):
+    data["stage"] = 'AP'
+    last_eating_time = data[data.eating].iloc[-1].t
+    data.loc[data.t > last_eating_time, "stage"] = 'post'
+    angle_end = data[data.stage == 'post'].iloc[0].angle
+
+    nrevs_f = angle_end / (2 * np.pi)
+    nrevs_i = np.rint(nrevs_f)
+    angle_anchor = nrevs_i * 2 * np.pi
+    data["relative_angle"] = np.NaN
+    data.loc[data.t > last_eating_time, "relative_angle"] = data[data.t > last_eating_time].angle - angle_anchor
+
+    data["departure_state"] = 'pre'
+    if data[data.relative_angle.abs() > np.pi].empty:
+        return data
+    departure_time = data[data.relative_angle.abs() > np.pi].iloc[0].t
+    #     print(departure_time)
+    data.loc[data.t >= departure_time, "departure_state"] = "post"
+
+    return data
+
+
 if __name__ == '__main__':
     data_filename = sys.argv[1]
     df = pd.read_csv(data_filename)
+    df = df.groupby('flyid').apply(mark_stages)  # departure_state and stage
 
     run_info = df.groupby(["flyid", "run_num"]).aggregate(
-        {'angle': ['first', 'last'], 'last_food_index': 'first', 'direction': 'first'}).reset_index()
+        {'angle': ['first', 'last'],
+         'last_food_index': 'first',
+         'direction': 'first',
+         'departure_state': 'last'}).reset_index()
     run_info.columns = ["_".join(x) for x in run_info.columns.ravel()]
     run_info['run_midpoint'] = (run_info.angle_last + run_info.angle_first) / 2
     run_info.rename(columns={"run_num_": "run_num", "flyid_": "flyid",
                              "last_food_index_first": "last_food_index",
-                             "direction_first": "direction"}, inplace=True)
+                             "direction_first": "direction",
+                             "departure_state_last": "departure_state"}, inplace=True)
     run_info['theta_midpoint'] = run_info.run_midpoint.apply(lambda angle: angle_minuspitopi(angle))
     pdf_fname = data_filename[:-4]+".pdf"
     post_runs = run_info[run_info['run_num'] >= 0]
-
     pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_fname)
-
-    # fig1 = plt.figure(figsize=(10, 5))
-    # sns.histplot(data=post_runs, x='theta_midpoint', hue='last_food_index', element='step', fill=False, bins=20)
-    # plt.title("Run length midpoints Post, all trials")
-    # pdf.savefig(fig1)
 
     food_coords = df.last_food_coord.unique()
     for ifood, food_coord in enumerate(food_coords):
@@ -76,17 +107,28 @@ if __name__ == '__main__':
     post_runs_good = post_runs[post_runs.flyid.isin(good_flies)]
     post_runs_good.to_csv(data_filename[:-4] + "_postAP_runs_selected.csv", index=False)
 
-    fig3, axs = plt.subplots(2, 1, figsize=(4,6))
+    fig3, axs = plt.subplots(3, 1, figsize=(4, 9))
     # bins was 20 before
+    bins = np.linspace(-np.pi, np.pi, 22)
     sns.histplot(data=post_runs, x='theta_midpoint', hue='last_food_index', element='step',
-                 fill=False, bins=21, ax=axs[0])
+                 fill=False, bins=bins, ax=axs[0])
     axs[0].set_title("Run length midpoints Post, all trials")
 
     sns.histplot(data=post_runs[post_runs.flyid.isin(good_flies)], x='theta_midpoint', hue='last_food_index',
-                 element='step', fill=False, stat='density', common_norm=False, bins=21, ax=axs[1])
+                 element='step', fill=False, stat='density', common_norm=False, bins=bins, ax=axs[1])
     axs[1].set_title("Selected trials")
+
+    print(post_runs.departure_state.value_counts())
+    sns.histplot(data=post_runs[(post_runs.flyid.isin(good_flies)) & (post_runs.departure_state == 'pre')],
+                 x='theta_midpoint', hue='last_food_index',
+                 element='step', fill=False, stat='density', common_norm=False, bins=bins, ax=axs[2])
+    axs[2].set_title("Selected trials pre departure")
+    axs[2].set_xticks([-np.pi, 0, np.pi])
+    axs[2].set_xticklabels([r'- $\pi$', '0', r'$\pi$'])
+
     plt.tight_layout()
     pdf.savefig(fig3)
+
     pdf.close()
     time.sleep(2)
     print("bye:)")

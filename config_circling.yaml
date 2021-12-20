@@ -56,3 +56,12 @@ model_settings:
     Ph_lifetime: 500
     BLRL_mean: 80
     BLRL_std: 20
+    
+  circling_simulations_1412.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 3
+    Ph_std_k: 1
+    Ph_lifetime: 500
+    BLRL_mean: 80
+    BLRL_std: 20    

@@ -30,7 +30,7 @@
 # # initial:
 
 iterations: 1000
-data_folder: rewards3
+data_folder: data/rewards3
 
 channel:
   half_length: 26
@@ -67,12 +67,31 @@ model_settings:
     BLRL_mean: 50
     BLRL_std: 5
 
-  # same as in circling 5th
+  # same as in circling 5th, the one used for S fig in relocation paoer
   three_rewards_5.csv:
     RL_mean: 4.125
     RL_std: 2.625
     Ph_k: 3
     Ph_std_k: 3
+    Ph_lifetime: 500
+    BLRL_mean: 80
+    BLRL_std: 20
+    
+  pheromone_simulations_0712.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 1.5
+    Ph_std_k: 2
+    Ph_lifetime: 500
+    BLRL_mean: 80
+    BLRL_std: 20
+
+
+  pheromone_simulations_1412.csv:
+    RL_mean: 4.125
+    RL_std: 2.625
+    Ph_k: 3
+    Ph_std_k: 1
     Ph_lifetime: 500
     BLRL_mean: 80
     BLRL_std: 20

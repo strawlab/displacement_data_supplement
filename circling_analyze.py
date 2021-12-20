@@ -7,8 +7,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import os
 
 from shared_funcs import angle_minuspitopi
+
+
+def mark_stages(data):
+    data["stage"] = 'AP'
+    last_eating_time = data[data.eating].iloc[-1].t
+    data.loc[data.t > last_eating_time, "stage"] = 'post'
+    return data
 
 
 def mark_return(idata):
@@ -34,8 +42,8 @@ if __name__ == '__main__':
 
     data_filename = sys.argv[1]
     pdf_fname = data_filename[:-4] + ".pdf"
-    df = pd.read_csv(data_filename)
-
+    data_path = os.path.join("data/circling", data_filename)
+    df = pd.read_csv(data_path)
     ######################################################################
     # preprocessing
     print("preprocessing...")
@@ -44,9 +52,14 @@ if __name__ == '__main__':
     df = df[(df.iteration >= 0) & (df.iteration < n_iters)]
 
     # tt=0 when fly received reward last time, time scale for every trial
-    df["tt"] = df.groupby(['flyid', 'iteration']).apply(lambda df: df.t - df[df.eating].iloc[-1].t).values
-    df['stage'] = 'AP'
-    df.loc[df.tt >= 0, 'stage'] = 'post'
+
+    # does not work properly??!!
+    # df["tt"] = df.groupby(['flyid', 'iteration']).apply(lambda df: df.t - df[df.eating].iloc[-1].t).values
+    # df['stage'] = 'AP'
+    # df.loc[df.tt >= 0, 'stage'] = 'post'
+
+    # changed 11.12 copied from notebook : mark stages, removed departure..
+    df = df.groupby(['flyid', 'iteration']).apply(mark_stages)
 
     # analyse only postAP
     df = df[df.stage == 'post']
@@ -105,14 +118,15 @@ if __name__ == '__main__':
 
     # fig 2: run midpoints histogram
     print('Fig2...')
-    fig2 = plt.figure(figsize=(10, 4))
-    h = plt.hist(pd_runs.run_midpoint / pos_scale, bins=150)
+    fig2, ax_hist = plt.subplots(figsize=(10, 4))
+    h = ax_hist.hist(pd_runs.run_midpoint / pos_scale, bins=150)
     for i in range(5):
-        plt.axvline(i, c='gray', ls='--')
-        plt.axvline(-i, c='gray', ls='--')
-    plt.title('Run midpoints distribution')
-    plt.xlabel('Run midpoint, revolutions')
-    plt.ylabel('Count')
+        ax_hist.axvline(i, c='gray', ls='--')
+        ax_hist.axvline(-i, c='gray', ls='--')
+    ax_hist.set_title('Run midpoints distribution')
+    ax_hist.set_xlabel('Run midpoint, revolutions')
+
+    ax_hist.set_ylabel('Count')
     plt.tight_layout()
     pdf.savefig(fig2)
 
