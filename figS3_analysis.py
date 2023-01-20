@@ -10,7 +10,9 @@ import seaborn as sns
 from flydance.analysis.arena import load_arena_pickle, plot_trajectory, arena_hist2d
 from plotting.fig2 import plot_hist
 from plotting.figS1 import load_trajectories
-from plotting.plotting_helpers import my_gray_colormap, plot_arc_polar, conditions_mapping
+from plotting_helpers import my_gray_colormap, plot_arc_polar, conditions_mapping
+
+from plotting_helpers import mypolarhist, plot_arcs
 
 mpl.rc('font', size=7)
 mpl.rc('svg', fonttype='none')
@@ -104,32 +106,6 @@ def plot_dist_hists(layout, fig, config):
         ax.set_ylim(config['ylim'])
 
     layout.append_figure_to_layer(layout.figures[fig], 'mpl_layer')
-
-
-def mypolarhist(angles, ax, rscatter=10, scatter_size=5,
-                ticklabels=True, grid=False, ax_off=True, scatter_alpha=1.0, **kwargs):
-    hist_bins_angles = np.linspace(-np.pi, np.pi, 9)
-    #     print('angles:',np.rad2deg(angles))
-    #     shifted_angles = np.unwrap(angles - np.pi/8)
-    shifted_angles = (angles - np.pi / 8 + np.pi) % (2 * np.pi) - np.pi
-    #     print('shifted_angles:',np.rad2deg(shifted_angles))
-    ax.scatter(x=shifted_angles, y=np.ones_like(angles) * rscatter, edgecolors='none',
-               color='k', s=scatter_size, alpha=scatter_alpha)
-
-    ax.hist(shifted_angles, bins=hist_bins_angles, edgecolor='k')
-    ax.set_theta_offset(np.pi / 8 + np.pi / 2)
-    #     ax.set_xticks(-np.pi/8 + np.linspace(np.pi, -np.pi, 8, endpoint=False))
-
-    if ticklabels:
-        ax.set_xticks(-np.pi / 8 + np.linspace(0, 2 * np.pi, 8, endpoint=False))
-        ax.set_xticklabels(['0', '', r'- $\frac{\pi}{2}$', '', r'$\pm\pi$', '', r'$\frac{\pi}{2}$', ''])
-    else:
-        ax.set_xticks([])
-    ax.set_thetalim(-np.pi / 8, 2 * np.pi - np.pi / 8)
-    # lines, labels = ax.set_thetagrids(np.arange(-180/8., 2*180, 2*180./8))
-    ax.grid(grid)
-    if ax_off:
-        ax.axis('off')
 
 
 def plot_downsampling(layout, fig, config):
@@ -236,25 +212,6 @@ def plot_coord_transform(layout, fig, config):
         plot_mean_arz([ax_traj_f], ['rewarded'], flyids=flyids)
 
     layout.append_figure_to_layer(layout.figures[fig], 'mpl_layer')
-
-
-def plot_arcs(ax, df_teststart, align_to='angle_fr', binsadd=-np.pi / 8, r_fr=9, r_ar=9.5, alpha=0.05, lw=3):
-    # for ic, condition in enumerate(['rewarded', 'non-rewarded']):
-
-    for flyid, flydata in df_teststart.iterrows():
-        fr_arc = np.array([flydata.angle_fr - flydata.fr_span, flydata.angle_fr + flydata.fr_span])
-        ar_arc = np.array([flydata.angle_ar - flydata.ar_span, flydata.angle_ar + flydata.ar_span])
-
-        # print(flydata)
-        # print(flydata['angle_fr'])
-        # print(flydata['anlge_reloc_start'])
-        align_angle = flydata[align_to]
-
-        show_fr_arc = fr_arc - align_angle + binsadd
-        show_ar_arc = ar_arc - align_angle + binsadd
-
-        plot_arc_polar(show_fr_arc[0], show_fr_arc[1], r_fr, ax, alpha=alpha, color='orange', lw=lw)
-        plot_arc_polar(show_ar_arc[0], show_ar_arc[1], r_ar, ax, alpha=alpha, color='red', lw=lw)
 
 
 def plot_enter_exit_stats(layout, fig, config, addfig=False):

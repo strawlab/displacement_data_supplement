@@ -1,7 +1,3 @@
-import io
-
-import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import os
 from figurefirst import FigureLayout
@@ -90,9 +86,7 @@ if __name__ == '__main__':
     # test_period length (not implemented yet)
     # arena?
 
-    # layout_fname = 'fig_layouts/fig_reloc_layout_0420l.svg'
     layout_fname = 'fig_layouts/fig_displacement_layout.svg'
-    # fig1_fname = 'output/figure_reloc_0420_g.svg'
     fig_fname = 'figures/figure_displacement_overview.svg'
 
     #flyids = [6, 9, 22]
