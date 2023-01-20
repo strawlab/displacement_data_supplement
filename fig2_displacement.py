@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # arena?
 
     # layout_fname = 'fig_layouts/fig_reloc_layout_0420l.svg'
-    layout_fname = 'fig_layouts/fig_reloc_layout.svg'
+    layout_fname = 'fig_layouts/fig_displacement_layout.svg'
     # fig1_fname = 'output/figure_reloc_0420_g.svg'
     fig_fname = 'figures/figure_displacement_overview.svg'
 
@@ -102,5 +102,5 @@ if __name__ == '__main__':
     if not os.path.isfile(alltraj_fname):
         raise FileNotFoundError(alltraj_fname)
 
-    # figure1(alltraj_fname, flyids, layout_fname, fig1_fname, cmap=my_gray_colormap(0.25, 1.0))
-    figure1(alltraj_fname, flyids, layout_fname, fig_fname)
+    figure1(alltraj_fname, flyids, layout_fname, fig_fname, cmap=my_gray_colormap(0.25, 1.0))
+    # figure1(alltraj_fname, flyids, layout_fname, fig_fname)
