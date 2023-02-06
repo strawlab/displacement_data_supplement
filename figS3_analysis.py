@@ -7,9 +7,9 @@ from matplotlib.patches import Circle
 import figurefirst as fifi
 import seaborn as sns
 
-from flydance.analysis.arena import load_arena_pickle, plot_trajectory, arena_hist2d
-from plotting.fig2 import plot_hist
-from plotting.figS1 import load_trajectories
+from arena import load_arena_pickle, plot_trajectory, arena_hist2d
+from fig_displ_analysis import plot_hist
+from figS2_displacement import load_trajectories
 from plotting_helpers import my_gray_colormap, plot_arc_polar, conditions_mapping
 
 from plotting_helpers import mypolarhist, plot_arcs
@@ -23,26 +23,26 @@ _config_ = {
     # 'layout':
     # 'figure':
     'downsample': dict(dt=0.1, dd=5,
-                       folder='/mnt/strawscience/anna/experiments/relocation/data_preprocessed/flytrax20181204_170930',
+                       folder='data/flytrax20181204_170930',
                        file_original='clean_flytrax20181204_170930.csv',
                        file_dst='ds_t01_flytrax20181204_170930.csv',
                        file_dstd='ds_t01_d2_flytrax20181204_170930.csv',
                        cmap_heatmap='viridis',
                        # arena='../analysis/configs/big_arena_fr_black_shadow.pickle',
-                       arena='/mnt/strawscience/anna/experiments/relocation/big_arena_fr_black_shadow.pickle',
+                       arena='data/big_arena_fr_black_shadow.pickle',
                        nbins=20,
                        traj_markersize=1,
                        cmap_traj=gray_cmap),
 
     'coords': dict(  # example_flies=[3, 30],  # uncomment this line if want to plot examples of coord transform
         # alltraj="/mnt/strawscience/anna/experiments/relocation/all_traj/all_ds_t01_d2_cm_no2.csv.gz",
-        data_rz='/mnt/strawscience/anna/experiments/relocation/reward_zones/reward_locations.csv',
-        arena_frz='/mnt/strawscience/anna/experiments/relocation/cmarena_rewarded_fictive_rewards.pickle',
+        data_rz='data/reward_zones/reward_locations.csv',
+        arena_frz='data/reward_zones/cmarena_rewarded_fictive_rewards.pickle',
         lw_meanrz=2,
         traj_markersize=1),
 
-    'directions': dict(test_start='/mnt/strawscience/anna/experiments/relocation/stats/after_reloc_state.tsv',
-                       vectors='/mnt/strawscience/anna/experiments/relocation/stats/start_vectors.tsv',
+    'directions': dict(test_start='data/stats/after_reloc_state.tsv',
+                       vectors='data/stats/start_vectors.tsv',
                        polarhist_kw=dict(rscatter=9, ticklabels=False, grid=True,
                                          scatter_size=4, scatter_alpha=0.4),
                        arc=dict(lw=2, r_fr=10, r_ar=11),
@@ -57,17 +57,17 @@ _config_ = {
                         # spines={'ax_dists_rew': ['left', 'bottom'],
                         #         'ax_dists_nonrew': ['bottom']}
                         ),
-    'alltraj_fname': "/mnt/strawscience/anna/experiments/relocation/all_traj/all_ds_t01_d2_cm_no2.csv.gz",
+    'alltraj_fname': "data/all_ds_t01_d2_cm_no2.csv.gz",
     'test_sec': 100,
-    'walking_hists': dict(arena='../analysis/configs/big_arena_fr_black_shadow.pickle',
-                          rz_fname="/mnt/strawscience/anna/experiments/relocation/reward_zones/mean_fictive_rz_coords.csv",
+    'walking_hists': dict(arena='data/big_arena_fr_black_shadow.pickle',
+                          rz_fname="data/reward_zones/mean_fictive_rz_coords.csv",
                           cmap='viridis',
                           nbins=20,
                           vmax=2.7
                           ),
-    'enter_exit': dict(enters='/mnt/strawscience/anna/experiments/relocation/stats/enters_2cm_walking.csv',
-                       exits='/mnt/strawscience/anna/experiments/relocation/stats/exits_2cm_walking.csv',
-                       stats='/mnt/strawscience/anna/experiments/relocation/stats/enter_exit_intersections.tsv',
+    'enter_exit': dict(enters='data/stats/enters_2cm_walking.csv',
+                       exits='data/stats/exits_2cm_walking.csv',
+                       stats='data/stats/enter_exit_intersections.tsv',
                        threshold=0.25,
                        plot_scalebar=False,
                        ntrajs=6,
@@ -387,7 +387,7 @@ def plot_swarm_intersections(layout, fig, intersections):
     ax_swarm = layout.axes[(fig, 'enex_all')]
     sns.swarmplot(x='condition', y='max_intersect_len', data=intersections,
                   order=['rewarded', 'non-rewarded'], palette=swarm_palette, size=3,
-                  ax=ax_swarm)
+                  ax=ax_swarm["axis"])
     # splot = sns.boxplot(x='condition', y='max_intersect_len', data=intersections,
     #                     order=['rewarded', 'non-rewarded'],
     #                     showcaps=False, boxprops={'facecolor': 'None'},
@@ -423,8 +423,8 @@ def plot_enter_exit(layout, fig, config):
 if __name__ == '__main__':
     # layout_fname = 'layouts/layout_s2_b.svg'
     # fig_fname = 'output/figS2_0525.svg'
-    layout_fname = 'layouts/layout_s2.svg'
-    fig_fname = 'output/figS2.svg'
+    layout_fname = 'fig_layouts/layout_s_analysis.svg'
+    fig_fname = 'figures/S_analysis.svg'
 
     layout = FigureLayout(layout_fname, autogenlayers=True, make_mplfigures=True,
                           hide_layers=['fifi_axs', 'layer_trash'])
