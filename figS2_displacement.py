@@ -8,14 +8,15 @@ import pickle
 import matplotlib as mpl
 import time
 
-from plotting.fig1 import plot_traj
-from plotting.plotting_helpers import my_gray_colormap
+#from plotting.fig1 import plot_traj
+from fig2_displacement import plot_traj
+from plotting_helpers import my_gray_colormap
+from arena import load_arena_pickle
 
 mpl.rc('font', size=7)
 #with open('../analysis/configs/big_arena_painted.pickle', 'rb') as f:
-with open('../analysis/configs/big_arena_fr_black_shadow.pickle', 'rb') as f:
-    ARENA = pickle.load(f)
-    print(ARENA.objects)
+
+ARENA = load_arena_pickle("data/big_arena_fr_black_shadow.pickle")
 
 segments_mapping = {'baseline': 'pre',
                     'stimulation': 'stim',
@@ -40,7 +41,7 @@ _config = {
             }},
 
     'trajectories': {
-        'df': "/mnt/strawscience/anna/experiments/relocation/all_traj/all_ds_t01_cm.csv.gz",
+        'df': "data/all_ds_t01_cm.csv.gz",
         'rewarded_ids': [6, 10, 28],
         'nonrewarded_ids': [15, 19, 32],
         # 'cmap': 'winter'
@@ -122,10 +123,10 @@ if __name__ == '__main__':
     # test_period length (not implemented yet)
     # arena?
 
-    layout_fname = 'layouts/layout_s1.svg'
-    fig_fname = 'output/figS1.svg'
+    layout_fname = 'fig_layouts/layout_s1.svg'
+    fig_fname = 'figures/S2_displacement.svg'
 
-    t_data_fname = "/mnt/strawscience/anna/temperature/temperature_last_mes.tsv"
+    t_data_fname = "data/temperature.tsv" # temperature_last_mes.tsv
     if not os.path.isfile(t_data_fname):
         raise FileNotFoundError(t_data_fname)
 

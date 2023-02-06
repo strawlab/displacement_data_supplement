@@ -4,11 +4,11 @@ import numpy as np
 import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import figurefirst as fifi
 from figurefirst import FigureLayout
 
-from flydance.analysis.arena import plot_arena_histogram, load_arena_pickle
+from arena import plot_arena_histogram, load_arena_pickle
 
 mpl.rc('font', size=6)
 
@@ -41,8 +41,8 @@ def heatmaps_figure(layout):
     ax_emitter = layout.axes[('fig_heatmaps', 'ax_heatmap_emitter')]
     ax_no = layout.axes[('fig_heatmaps', 'ax_heatmap_no')]
     ax_colorbar = layout.axes[('fig_heatmaps', 'ax_colorbar')]
-    heatmap_emitter = "../analysis/pheromones/results/heatmap_emitter.npz"
-    heatmap_no = "../analysis/pheromones/results/heatmap_no_emitter.npz"
+    heatmap_emitter = "data/pheromones/heatmap_emitter.npz"
+    heatmap_no = "data/pheromones/heatmap_no_emitter.npz"
     if not os.path.isfile(heatmap_emitter):
         raise FileNotFoundError(heatmap_emitter)
     if not os.path.isfile(heatmap_emitter):
@@ -65,8 +65,8 @@ def fractions_figure(layout, config):
     print(orient)
 
     ax_fractions = layout.axes[('fig_fractions', 'ax_fractions')]
-    fname_fractions = "../analysis/pheromones/results/pheromone_test_fracs5_30.tsv"  # todo: move to config
-    fraction_col = 'fraction'  # todo: move to config
+
+    fname_fractions = "data/pheromones/pheromone_test_fracs5_30.tsv"
 
     df_fracs = pd.read_csv(fname_fractions, sep='\t')
     swarm_palette = [colors_cfg['mass_test_no'], colors_cfg['mass_test']]
@@ -84,9 +84,9 @@ def fractions_figure(layout, config):
                             showcaps=False, boxprops={'facecolor': 'None'},
                             showfliers=False, whiskerprops={'linewidth': 0}, ax=ax_fractions)
     else:
-        sns.swarmplot(x='experiment', y='fraction', data=df_fracs,
+        splot = sns.swarmplot(x='experiment', y='fraction', data=df_fracs, hue='experiment',
                       order=['mass_test_no', 'mass_test'], palette=swarm_palette, size=3,
-                      ax=ax_fractions)
+                      ax=ax_fractions["axis"])
         splot = sns.boxplot(x='experiment', y='fraction', data=df_fracs,
                             order=['mass_test_no', 'mass_test'],
                             showcaps=False, boxprops={'facecolor': 'None'},
@@ -95,6 +95,8 @@ def fractions_figure(layout, config):
                                          spine_locations={'left': 0, 'bottom': 0}, spine_location_offset=0,
                                          yticks=[0, 0.04, 0.08, 0.12], direction='out',
                                          smart_bounds=False, tick_length=2)
+        plt.legend([], [], frameon=False)
+
         for tl in ax_fractions.get_xticklabels():
             tl.set_visible(False)
 
@@ -104,26 +106,9 @@ def fractions_figure(layout, config):
 
 
 if __name__ == '__main__':
-    settings_design1 = dict(layout_fname='layouts/fig_pheromones_layout.svg',
-                            fig_fname='output/figure_pheromones_old_layout.svg',
-                            arena_fname="../analysis/pheromones/pheromones_mass_arena.pickle")
-    settings_design2 = dict(layout_fname='layouts/fig_pheromones_layout_b2.svg',
-                            fig_fname='output/figure_pheromones.svg',
-                            arena_fname="../analysis/pheromones/pheromones_mass_arena.pickle")
-    settings_design_0420 = dict(layout_fname='layouts/fig_pheromones_layout_0420.svg',
-                                fig_fname='output/figure_pheromones_0420.svg',
-                                arena_fname="../analysis/pheromones/pheromones_mass_arena.pickle")
-    settings_design_0525 = dict(layout_fname='layouts/fig_pheromones_layout_0525.svg',
-                                fig_fname='output/figure_pheromones_0525.svg',
-                                arena_fname="../analysis/pheromones/pheromones_mass_arena.pickle")
-
-    settings_design_2021 = dict(layout_fname='layouts/fig_pheromones_layout_pp.svg',
-                                fig_fname='output/figure_pheromones_pp.svg',
-                                arena_fname="/mnt/strawscience/anna/experiments/pheromones/configs/pheromones_mass_arena.pickle")
-    settings_design_2022 = dict(layout_fname='layouts/layout_pheromones.svg',
-                                fig_fname='output/fig_pheromones_imj.svg',
-                                arena_fname="/mnt/strawscience/anna/experiments/pheromones/configs/pheromones_mass_arena.pickle")
-    settings = settings_design_2022
+    settings = dict(layout_fname='fig_layouts/layout_pheromones.svg',
+                                fig_fname='figures/fig_pheromones.svg',
+                                arena_fname="data/pheromones_mass_arena.pickle")
 
     arena = load_arena_pickle(settings['arena_fname'])
 
