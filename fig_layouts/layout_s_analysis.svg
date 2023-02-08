@@ -8,8 +8,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="layout_s2_fg.svg"
-   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="layout_s_analysis.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    width="163.35895mm"
    height="180mm"
    viewBox="0 0 163.35895 180.00001"
@@ -62,16 +62,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="334.15601"
-     inkscape:cy="514.30268"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="303.42037"
+     inkscape:cy="216.57359"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="697"
-     inkscape:window-x="0"
-     inkscape:window-y="23"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      fit-margin-top="1"
      lock-margins="false"
@@ -86,7 +86,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -892,14 +892,14 @@
     <text
        id="text2276"
        y="73.686478"
-       x="134.60225"
-       style="font-size:2.46944px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.264583"
+       x="135.23853"
+       style="font-size:2.46943998px;line-height:1.25;font-family:sans-serif;display:inline;stroke-width:0.26458299"
        xml:space="preserve"><tspan
-         style="stroke-width:0.264583"
+         style="stroke-width:0.26458299"
          y="73.686478"
-         x="134.60225"
+         x="135.23853"
          id="tspan2274"
-         sodipodi:role="line">Anti-relocation</tspan></text>
+         sodipodi:role="line">Displaced from</tspan></text>
     <text
        id="text6054"
        y="139.06657"
@@ -1139,13 +1139,13 @@
          sodipodi:role="line">density</tspan></text>
     <text
        id="text2973"
-       y="149.65733"
-       x="117.29321"
-       style="font-size:2.46944px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       y="148.3477"
+       x="3.1691246"
+       style="font-size:2.46943998px;line-height:1.25;font-family:sans-serif;stroke-width:0.26458299"
        xml:space="preserve"><tspan
-         style="font-weight:bold;font-size:4.23333px;stroke-width:0.264583"
-         y="149.65733"
-         x="117.29321"
+         style="font-weight:bold;font-size:4.23332977px;stroke-width:0.26458299"
+         y="148.3477"
+         x="3.1691246"
          id="tspan2971"
          sodipodi:role="line">F</tspan></text>
     <text
@@ -1205,15 +1205,15 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:2.46944px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
-       x="3.7869961"
-       y="149.65527"
+       style="font-size:2.46943998px;line-height:1.25;font-family:sans-serif;stroke-width:0.26458299"
+       x="117.5369"
+       y="148.34564"
        id="text1089"><tspan
          sodipodi:role="line"
          id="tspan1087"
-         x="3.7869961"
-         y="149.65527"
-         style="font-weight:bold;font-size:4.23333px;stroke-width:0.264583">G</tspan></text>
+         x="117.5369"
+         y="148.34564"
+         style="font-weight:bold;font-size:4.23332977px;stroke-width:0.26458299">G</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
