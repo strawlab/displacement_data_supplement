@@ -41,9 +41,9 @@ if __name__ == '__main__':
     example_flyid = 42  # plot trajectories of one individual simulation
 
     data_filename = sys.argv[1]
-    pdf_fname = data_filename[:-4] + ".pdf"
-    data_path = os.path.join("data/circling", data_filename)
-    df = pd.read_csv(data_path)
+    pdf_fname = data_filename[:-4] + ".pdf"  # csv -> pdf , in the same folder
+    # data_path = os.path.join("data/circling", data_filename)
+    df = pd.read_csv(data_filename)
     ######################################################################
     # preprocessing
     print("preprocessing...")
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     fig1, ax = plt.subplots(figsize=(8, 4))
     one_example = df[df.flyid == example_flyid].copy()
     one_example = one_example.groupby('iteration').apply(mark_return)
-    one_example.to_csv('circling_example.csv', index=False)
+    one_example.to_csv(data_filename[:-4] + '_example.csv', index=False)
 
     pos_scale = 2 * np.pi  # position in full revolutions
     t_scale = 2.  # time in seconds
